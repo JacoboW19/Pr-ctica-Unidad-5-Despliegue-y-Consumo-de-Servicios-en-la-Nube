@@ -43,7 +43,7 @@ Para que nuestro servidor web (backend) y la API de la nube (Google) puedan comu
 
 ## 3. Seguridad: Protección de API Keys y Variables de Entorno
 
-> ⚠️ **Vulnerabilidad Crítica:** Exponer una clave de API directamente en el frontend es el equivalente a dejar las llaves de producción públicas. Cualquier usuario o bot puede extraerla inspeccionando el navegador o el repositorio.
+> **Vulnerabilidad Crítica:** Exponer una clave de API directamente en el frontend es el equivalente a dejar las llaves de producción públicas. Cualquier usuario o bot puede extraerla inspeccionando el navegador o el repositorio.
 
 ### Riesgos Principales
 * **Secuestro de Facturación:** Explotación automatizada de cuotas, generando costos elevados.
