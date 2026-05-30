@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Evaluación IA | ITCM</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="cabecera-principal">
+        <div class="etiqueta-estado">Conexión con Gemini API</div>
+        <h1>Registro de Proyectos de IA</h1>
+        <p>Completa el siguiente formulario para que el modelo de lenguaje evalúe la viabilidad de tu propuesta tecnológica.</p>
+    </header>
+
+    <section class="contenedor-formulario">
+        
+        <form id="registro-ia" action="/api/generar" method="POST">
+            
+            <fieldset class="seccion-datos">
+                <legend>Datos del Estudiante</legend>
+                
+                <div class="grupo-input">
+                    <label for="estudiante">Nombre Completo:</label>
+                    <input type="text" id="estudiante" name="nombre" placeholder="Ej. Tony Suárez" required>
+                </div>
+
+                <div class="fila-doble">
+                    <div class="grupo-input">
+                        <label for="matricula">Número de Control:</label>
+                        <input type="text" id="matricula" name="numero_control" placeholder="Ej. 21060000" pattern="[A-Za-z0-9]{8}" maxlength="8" required>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="carrera">Carrera:</label>
+                        <select id="carrera" name="carrera" required>
+                            <option value="" disabled selected>Selecciona una opción...</option>
+                            <option value="sistemas">Ingeniería en Sistemas Computacionales</option>
+                            <option value="quimica">Ingeniería Química</option>
+                            <option value="mecanica">Ingeniería Mecánica</option>
+                            <option value="geociencias">Ingeniería en Geociencias</option>
+                            <option value="gestion">Ingeniería en Gestión Empresarial</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="email">Correo Institucional:</label>
+                    <input type="email" id="email" name="correo" placeholder="usuario@itcm.edu.mx" required>
+                </div>
+            </fieldset>
+
+            <fieldset class="seccion-datos">
+                <legend>Detalles de la Propuesta</legend>
+
+                <div class="grupo-input">
+                    <label for="nombre-proyecto">Título del Proyecto:</label>
+                    <input type="text" id="nombre-proyecto" name="titulo" required>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="prompt-text">Descripción Técnica (Mínimo 10 palabras):</label>
+                    <textarea id="prompt-text" name="tema" rows="5" placeholder="Explica tu idea, las tecnologías que usarás y el problema que resuelve..." required></textarea>
+                    
+                    <div id="indicador-palabras" class="conteo-texto">
+                        Total de palabras: 0 / 10
+                    </div>
+                </div>
+            </fieldset>
+
+            <button type="submit" id="btn-procesar">Consultar con Gemini</button>
+        </form>
+
+    </section>
+
+    <script>
+        const areaTexto = document.getElementById('prompt-text');
+        const vistaConteo = document.getElementById('indicador-palabras');
+        const formulario = document.getElementById('registro-ia');
+        const limitePalabras = 10;
+
+        // Función flecha para contar palabras (distinta a la de tu compañero)
+        const obtenerConteo = (cadena) => {
+            const textoFiltrado = cadena.trim();
+            return textoFiltrado === '' ? 0 : textoFiltrado.split(/\s+/).length;
+        };
+
+        // Evento que se dispara al escribir
+        areaTexto.addEventListener('keyup', () => {
+            const total = obtenerConteo(areaTexto.value);
+            
+            vistaConteo.innerText = `Total de palabras: ${total} / ${limitePalabras}`;
+            
+            // Cambiamos el color dependiendo de si cumple el requisito
+            if (total >= limitePalabras) {
+                vistaConteo.style.color = '#2e7d32'; // Verde
+                vistaConteo.style.fontWeight = 'bold';
+            } else {
+                vistaConteo.style.color = '#c62828'; // Rojo
+                vistaConteo.style.fontWeight = 'normal';
+            }
+        });
+
+        // Interceptar el envío del formulario para validación final
+        formulario.addEventListener('submit', (evento) => {
+            const control = document.getElementById('matricula').value.trim();
+            const palabrasActuales = obtenerConteo(areaTexto.value);
+
+            let errores = [];
+
+            if (control.length !== 8) {
+                errores.push("El Número de Control debe ser exactamente de 8 caracteres.");
+            }
+
+            if (palabrasActuales < limitePalabras) {
+                errores.push(`La descripción necesita al menos ${limitePalabras} palabras. Te faltan ${limitePalabras - palabrasActuales}.`);
+            }
+
+            // Si hay errores, evitamos que la página recargue y mostramos alerta
+            if (errores.length > 0) {
+                evento.preventDefault();
+                alert(errores.join('\\n'));
+            }
+        });
+    </script>
+</body>
+</html>
